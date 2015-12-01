@@ -1,0 +1,67 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script> 
+
+<style type="text/css">
+#form{
+	padding: 10px;
+}
+#form label{
+	width: 150px;
+	color: blue;
+	float: left;
+}
+#form input {
+	margin: 2px;
+}
+#frmCvrlive{
+	color: red;
+	font-size: 14px;
+	font-weight: bold;
+	padding: 10px;
+	width:500px !important
+}
+</style>
+
+<div id="form">
+<label>CVR</label><input type="text" id="frmCVR"><br>
+<label>Result</label>
+<span id="frmCvrlive" ></span>
+<textarea cols='60' rows='8' id="cvr_respons">Result...</textarea>
+</div>
+
+<script type="text/javascript">
+jQuery( document ).ready(function() {
+	jQuery("#frmCVR").blur(function(e) {
+
+		var cvr = jQuery("#frmCVR").val();
+    	var reg = new RegExp("^[0-9]{8}$");
+    	if(!reg.test(cvr))
+    	{
+			$('#frmCvrlive').show();
+			$('#cvr_respons').hide();
+			$('#frmCvrlive').html('angiv et gyldigt CVR-nummer'); 
+			
+    	}
+    	else
+    	{
+		
+		$('#frmCvrlive').hide();
+			jQuery.getJSON("http://cvrapi.dk/api?search="+cvr+"&country=dk", function(data){
+				$('#cvr_respons').show();
+				
+				//  to fetch specif data
+				//console.log('companyName:'+data.name+'&#13;&#10;'+'Phone:'+data.phone+'&#13;&#10;'+'Email:'+data.email+'&#13;&#10;'+'zipCode:'+data.zipcode+'&#13;&#10;'+'Adreess:'+data.address);
+				$.each(data, function( index, value ) {
+  					$('#cvr_respons').append("&#13;&#10;"+index + ": " + value);
+				});
+					
+			}).fail(function(jqXHR, textStatus, errorThrown) { 
+					$('#frmCvrlive').show();
+					$('#cvr_respons').hide();
+					$('#frmCvrlive').html('angiv et gyldigt CVR-nummer');
+				})
+			}
+
+		
+    });
+});
+</script>
